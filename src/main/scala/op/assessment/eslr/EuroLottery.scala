@@ -27,13 +27,17 @@ object EuroLottery {
     import cats.instances.set._
     import cats.syntax.unorderedTraverse._
 
+    type IntParse = String => Option[Int]
+
     def apply(input: String): Option[Ticket] = {
 
-      def number(str: String): Option[Int] =
+      def number(str: String): Option[Int] = {
         Try(str.toInt).toOption.filter(n => n >= 1 && n <= 50)
+      }
 
-      def star(str: String): Option[Int] =
+      def star(str: String): Option[Int] = {
         Try(str.toInt).toOption.filter(s => s >= 1 && s <= 11)
+      }
 
       val parts: Option[(String, String)] = {
         val split = input.replaceAll(" ", "").split(":")
@@ -41,17 +45,21 @@ object EuroLottery {
         else None
       }
 
+      def toInts(str: String)(f: IntParse): Option[Set[Int]] = {
+        str.split(",").toSet.unorderedTraverse(f)
+      }
+
       val numbers: Option[Set[Int]] = {
         for {
           (nums, _) <- parts
-          n <- nums.split(",").toSet.unorderedTraverse(number)
+          n <- toInts(nums)(number)
         } yield n
       }
 
       val stars: Option[Set[Int]] = {
         for {
           (_, stars) <- parts
-          s <- stars.split(",").toSet.unorderedTraverse(star)
+          s <- toInts(stars)(star)
         } yield s
       }
 
