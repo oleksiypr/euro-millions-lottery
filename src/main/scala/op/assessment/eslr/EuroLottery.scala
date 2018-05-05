@@ -24,22 +24,30 @@ object EuroLottery {
   object Ticket {
 
     def apply(input: String): Option[Ticket] = {
-      def number(s: String): Option[Int] =
-        Try(s.toInt).toOption.filter(n => n >= 1 && n <= 50)
+      def number(str: String): Option[Int] =
+        Try(str.toInt).toOption.filter(n => n >= 1 && n <= 50)
 
-      def star(s: String): Option[Int] =
-        Try(s.toInt).toOption.filter(s => s >= 1 && s<= 3)
+      def star(str: String): Option[Int] =
+        Try(str.toInt).toOption.filter(s => s >= 1 && s<= 3)
 
-      val parts = input.replaceAll(" ", "").split(":")
-
-      val numbers: Option[List[Int]] = {
-        val list = parts(0).split(",").toList
-        list.traverse[Option, Int](number)
+      val parts: Option[(String, String)] = {
+        val splitted = input.replaceAll(" ", "").split(":")
+        if (splitted.length == 2) Some((splitted(0), splitted(1)))
+        else None
       }
 
-      val stars: Option[List[Int]] = {
-        val list = parts(1).split(",").toList
-        list.traverse[Option, Int](star)
+      def numbers: Option[List[Int]] = {
+        for {
+          (nums, _) <- parts
+          n <- nums.split(",").toList.traverse[Option, Int](number)
+        } yield n
+      }
+
+      def stars: Option[List[Int]] = {
+        for {
+          (_, stars) <- parts
+          s <- stars.split(",").toList.traverse[Option, Int](number)
+        } yield s
       }
 
       for {
