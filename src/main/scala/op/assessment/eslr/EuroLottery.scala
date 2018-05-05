@@ -44,14 +44,14 @@ object EuroLottery {
       val numbers: Option[Set[Int]] = {
         for {
           (nums, _) <- parts
-          n <- nums.split(",").toSet.unorderedTraverse[Option, Int](star)
+          n <- nums.split(",").toSet.unorderedTraverse(number)
         } yield n
       }
 
       val stars: Option[Set[Int]] = {
         for {
           (_, stars) <- parts
-          s <- stars.split(",").toSet.unorderedTraverse[Option, Int](star)
+          s <- stars.split(",").toSet.unorderedTraverse(star)
         } yield s
       }
 

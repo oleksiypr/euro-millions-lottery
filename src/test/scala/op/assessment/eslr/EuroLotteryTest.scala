@@ -12,6 +12,12 @@ class EuroLotteryTest extends FunSuite {
       case None => fail("Some ticket expected but actual none")
     }
 
+    Ticket("1, 2, 3, 4, 40 : 1, 2") match {
+      case Some(ticket) =>
+        assert(ticket == NormalTicket(Set(1, 2, 3, 4, 40), Set(1, 2)))
+      case None => fail("Some ticket expected but actual none")
+    }
+
     Ticket("1, 2, 3, 4, 5, 6 : 1, 2") match {
       case Some(ticket) =>
         assert(ticket == SystemTicket(Set(1, 2, 3, 4, 5, 6), Set(1, 2)))
@@ -93,5 +99,4 @@ class EuroLotteryTest extends FunSuite {
     )
     assert(same.flatMap(_.normalTickets).size == 2)
   }
-
 }
