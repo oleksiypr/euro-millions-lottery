@@ -1,27 +1,31 @@
 package op.assessment.eslr
 
-import scala.util.Try
-import cats.instances.option._
-import cats.instances.list._
-import cats.syntax.traverse._
-
 object EuroLottery {
 
-  trait Ticket {
+  sealed trait Ticket {
     def numbers: List[Int]
     def stars: List[Int]
     def normalTickets: List[NormalTicket]
   }
 
-  case class NormalTicket(numbers: List[Int], stars: List[Int]) extends Ticket {
+  case class NormalTicket private(
+      numbers: List[Int], stars: List[Int]
+    ) extends Ticket {
     override def normalTickets: List[NormalTicket] = List(this)
   }
 
-  case class SystemTicket(numbers: List[Int], stars: List[Int]) extends Ticket {
+  case class SystemTicket private(
+      numbers: List[Int], stars: List[Int]
+    ) extends Ticket {
     override def normalTickets: List[NormalTicket] = ???
   }
 
   object Ticket {
+
+    import scala.util.Try
+    import cats.instances.option._
+    import cats.instances.list._
+    import cats.syntax.traverse._
 
     def apply(input: String): Option[Ticket] = {
 
@@ -37,28 +41,35 @@ object EuroLottery {
         else None
       }
 
-      def numbers: Option[List[Int]] = {
+      val numbers: Option[List[Int]] = {
         for {
           (nums, _) <- parts
           n <- nums.split(",").toList.traverse[Option, Int](number)
         } yield n
       }
 
-      def stars: Option[List[Int]] = {
+      val stars: Option[List[Int]] = {
         for {
           (_, stars) <- parts
           s <- stars.split(",").toList.traverse[Option, Int](star)
         } yield s
       }
 
-      (for {
+      val normal = for {
         ns <- numbers if ns.size == 5
         ss <- stars if ss.size == 2
-      } yield NormalTicket(ns, ss))
-      .orElse(for {
+      } yield {
+        NormalTicket(ns, ss)
+      }
+
+      def system = for {
         ns <- numbers if ns.size >= 5 && ns.size <= 10
         ss <- stars if ss.size >= 2 && ss.size <= 5
-      } yield SystemTicket(ns, ss))
+      } yield {
+        SystemTicket(ns, ss)
+      }
+
+      normal orElse system
     }
   }
 }
