@@ -24,15 +24,16 @@ object EuroLottery {
   object Ticket {
 
     def apply(input: String): Option[Ticket] = {
+
       def number(str: String): Option[Int] =
         Try(str.toInt).toOption.filter(n => n >= 1 && n <= 50)
 
       def star(str: String): Option[Int] =
-        Try(str.toInt).toOption.filter(s => s >= 1 && s<= 3)
+        Try(str.toInt).toOption.filter(s => s >= 1 && s <= 11)
 
       val parts: Option[(String, String)] = {
-        val splitted = input.replaceAll(" ", "").split(":")
-        if (splitted.length == 2) Some((splitted(0), splitted(1)))
+        val split = input.replaceAll(" ", "").split(":")
+        if (split.length == 2) Some((split(0), split(1)))
         else None
       }
 
@@ -46,14 +47,18 @@ object EuroLottery {
       def stars: Option[List[Int]] = {
         for {
           (_, stars) <- parts
-          s <- stars.split(",").toList.traverse[Option, Int](number)
+          s <- stars.split(",").toList.traverse[Option, Int](star)
         } yield s
       }
 
-      for {
+      (for {
         ns <- numbers if ns.size == 5
         ss <- stars if ss.size == 2
-      } yield NormalTicket(ns, ss)
+      } yield NormalTicket(ns, ss))
+      .orElse(for {
+        ns <- numbers if ns.size >= 5 && ns.size <= 10
+        ss <- stars if ss.size >= 2 && ss.size <= 5
+      } yield SystemTicket(ns, ss))
     }
   }
 }
