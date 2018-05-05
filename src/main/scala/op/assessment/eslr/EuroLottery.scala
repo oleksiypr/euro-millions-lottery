@@ -17,7 +17,26 @@ object EuroLottery {
   case class SystemTicket private(
       numbers: Set[Int], stars: Set[Int]
     ) extends Ticket {
-    override def normalTickets: Set[NormalTicket] = ???
+
+    override def normalTickets: Set[NormalTicket] = {
+      for {
+        ns <- combinations(numbers, 5)
+        ss <- combinations(stars, 2)
+      } yield {
+        NormalTicket(ns, ss)
+      }
+    }
+  }
+
+  private def combinations(set: Set[Int], m: Int): Set[Set[Int]] = {
+    if (m == 0) Set(Set.empty[Int]) else
+    if (set.isEmpty) Set(Set.empty[Int]) else
+    if (m >= set.size) Set(set) else {
+      for {
+        e <- set
+        comb <- combinations(set - e, m - 1)
+      } yield comb + e
+    }
   }
 
   object Ticket {

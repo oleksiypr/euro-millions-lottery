@@ -99,4 +99,21 @@ class EuroLotteryTest extends FunSuite {
     )
     assert(same.flatMap(_.normalTickets).size == 2)
   }
+
+  test("system ticket") {
+    val one = List(SystemTicket(Set(1, 2, 3, 4, 5), Set(1, 2, 3)))
+    val tickets: List[NormalTicket] = one.flatMap(_.normalTickets)
+    assert(tickets === List(
+      NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 2)),
+      NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 3)),
+      NormalTicket(Set(1, 2, 3, 4, 5), Set(2, 3))
+    ))
+
+    val same  = List(
+      SystemTicket(Set(1, 2, 3, 4, 5), Set(1, 2, 3)),
+      SystemTicket(Set(1, 2, 3, 4, 5), Set(1, 2, 3))
+    )
+
+    assert(same.flatMap(_.normalTickets).size == 6)
+  }
 }
