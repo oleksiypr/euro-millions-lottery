@@ -3,29 +3,29 @@ package op.assessment.eslr
 object EuroLottery {
 
   sealed trait Ticket {
-    def numbers: List[Int]
-    def stars: List[Int]
-    def normalTickets: List[NormalTicket]
+    def numbers: Set[Int]
+    def stars: Set[Int]
+    def normalTickets: Set[NormalTicket]
   }
 
   case class NormalTicket private(
-      numbers: List[Int], stars: List[Int]
+      numbers: Set[Int], stars: Set[Int]
     ) extends Ticket {
-    override def normalTickets: List[NormalTicket] = List(this)
+    override def normalTickets: Set[NormalTicket] = Set(this)
   }
 
   case class SystemTicket private(
-      numbers: List[Int], stars: List[Int]
+      numbers: Set[Int], stars: Set[Int]
     ) extends Ticket {
-    override def normalTickets: List[NormalTicket] = ???
+    override def normalTickets: Set[NormalTicket] = ???
   }
 
   object Ticket {
 
     import scala.util.Try
     import cats.instances.option._
-    import cats.instances.list._
-    import cats.syntax.traverse._
+    import cats.instances.set._
+    import cats.syntax.unorderedTraverse._
 
     def apply(input: String): Option[Ticket] = {
 
@@ -41,17 +41,17 @@ object EuroLottery {
         else None
       }
 
-      val numbers: Option[List[Int]] = {
+      val numbers: Option[Set[Int]] = {
         for {
           (nums, _) <- parts
-          n <- nums.split(",").toList.traverse[Option, Int](number)
+          n <- nums.split(",").toSet.unorderedTraverse[Option, Int](star)
         } yield n
       }
 
-      val stars: Option[List[Int]] = {
+      val stars: Option[Set[Int]] = {
         for {
           (_, stars) <- parts
-          s <- stars.split(",").toList.traverse[Option, Int](star)
+          s <- stars.split(",").toSet.unorderedTraverse[Option, Int](star)
         } yield s
       }
 

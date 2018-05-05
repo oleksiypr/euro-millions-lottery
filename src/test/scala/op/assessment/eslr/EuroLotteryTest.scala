@@ -8,43 +8,43 @@ class EuroLotteryTest extends FunSuite {
   test("data structure") {
     Ticket("1, 2, 3, 4, 5 : 1, 2") match {
       case Some(NormalTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5))
-        assert(ss === List(1, 2))
+        assert(ns === Set(1, 2, 3, 4, 5))
+        assert(ss === Set(1, 2))
       case x => assert(x === None)
     }
 
     Ticket("1, 2, 3, 4, 5, 6 : 1, 2") match {
       case Some(SystemTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5, 6))
-        assert(ss === List(1, 2))
+        assert(ns === Set(1, 2, 3, 4, 5, 6))
+        assert(ss === Set(1, 2))
       case x => assert(x === None)
     }
 
     Ticket("1, 2, 3, 4, 5 : 1, 2, 3") match {
       case Some(SystemTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5))
-        assert(ss === List(1, 2, 3))
+        assert(ns === Set(1, 2, 3, 4, 5))
+        assert(ss === Set(1, 2, 3))
       case x => assert(x === None)
     }
 
     Ticket("1, 2, 3, 4, 5, 6, 7, 8, 9, 10 : 1, 2") match {
       case Some(SystemTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-        assert(ss === List(1, 2))
+        assert(ns === Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        assert(ss === Set(1, 2))
       case x => assert(x === None)
     }
 
     Ticket("1, 2, 3, 4, 5 : 1, 2, 3, 4, 5") match {
       case Some(SystemTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5))
-        assert(ss === List(1, 2, 3, 4, 5))
+        assert(ns === Set(1, 2, 3, 4, 5))
+        assert(ss === Set(1, 2, 3, 4, 5))
       case x => assert(x === None)
     }
 
     Ticket("1, 2, 3, 4, 5, 6 : 1, 2, 3") match {
       case Some(SystemTicket(ns, ss)) =>
-        assert(ns === List(1, 2, 3, 4, 5, 6))
-        assert(ss === List(1, 2, 3))
+        assert(ns === Set(1, 2, 3, 4, 5, 6))
+        assert(ss === Set(1, 2, 3))
       case x => assert(x === None)
     }
   }
@@ -92,6 +92,10 @@ class EuroLotteryTest extends FunSuite {
       case None => succeed
       case x => assert(x === None)
     }
+    Ticket("-1, 2, 3, 4, 5 : 1, 6") match {
+      case None => succeed
+      case x => assert(x === None)
+    }
     Ticket("1, 2, 3, 4, 5 : 0, 11") match {
       case None => succeed
       case x => assert(x === None)
@@ -99,7 +103,7 @@ class EuroLotteryTest extends FunSuite {
   }
 
   test("all normal tickets") {
-    val tickets: List[Ticket] = List()
-    val normals: List[NormalTicket] = tickets.flatMap(_.normalTickets)
+    val tickets: Set[Ticket] = Set()
+    val normals: Set[NormalTicket] = tickets.flatMap(_.normalTickets)
   }
 }
