@@ -66,8 +66,25 @@ class EuroLotteryTest extends FunSuite {
     assert(Ticket("1, 2, 3, 4, 5 : 0, 11") === None)
   }
 
+  test("no tickets") {
+    assert(Set.empty[Ticket].flatMap(_.normalTickets) === Set.empty[Ticket])
+  }
+
   test("all normal tickets") {
-    val tickets: Set[Ticket] = Set()
-    val normals: Set[NormalTicket] = tickets.flatMap(_.normalTickets)
+    val one = Set(NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 2)))
+    assert(one.flatMap(_.normalTickets) ===
+      Set(NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 2))))
+
+    val many = Set(
+      NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 2)),
+      NormalTicket(Set(3, 7, 1, 9, 4), Set(5, 9)),
+      NormalTicket(Set(3, 7, 1, 9, 4), Set(5, 9))
+    )
+
+    assert(many.flatMap(_.normalTickets) === Set(
+      NormalTicket(Set(1, 2, 3, 4, 5), Set(1, 2)),
+      NormalTicket(Set(3, 7, 1, 9, 4), Set(5, 9)),
+      NormalTicket(Set(3, 7, 1, 9, 4), Set(5, 9))
+    ))
   }
 }
