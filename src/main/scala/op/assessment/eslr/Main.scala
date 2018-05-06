@@ -4,6 +4,18 @@ import cats.effect.IO
 import op.assessment.eslr.EuroLottery.{NormalTicket, Ticket}
 import scala.io.Source
 
+
+/**
+  * Program outputs an overview about winnings for the draw in a form
+  * Winning class N - number of winning tickets X.
+  *
+  * Output contains non empty winning classes only, in another words all
+  * classes with 0 winners ignored.
+  *
+  * Usage (assume SBT installed): {{{
+  *    sbt "run <path to file with lottery tickets>"
+  * }}}
+  */
 object Main extends App {
 
   type WinningClass = NormalTicket => Int
@@ -22,7 +34,7 @@ object Main extends App {
     .toArray.sortBy(_._1)
     .flatMap {
       case (0, _) => None
-      case (k, v) => Some(s"Winning class $k: ${v.size}")
+      case (k, v) => Some(s"Winning class $k - ${v.size}")
     }
 
   def filePathString:  Either[Throwable, String] = {
