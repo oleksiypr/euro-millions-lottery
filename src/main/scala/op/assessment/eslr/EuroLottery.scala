@@ -8,13 +8,13 @@ object EuroLottery {
     def normalTickets: Set[NormalTicket]
   }
 
-  case class NormalTicket private(
+  final case class NormalTicket private(
       numbers: Set[Int], stars: Set[Int]
     ) extends Ticket {
     override def normalTickets: Set[NormalTicket] = Set(this)
   }
 
-  case class SystemTicket private(
+  final case class SystemTicket private(
       numbers: Set[Int], stars: Set[Int]
     ) extends Ticket {
 

@@ -25,17 +25,23 @@ object Main extends App {
       case (k, v) => Some(s"Winning class $k: ${v.size}")
     }
 
-  if (args.length < 1) {
-    System.err.println("Wrong arguments. Usage: <input file>")
-    System.exit(1)
+  def filePathString:  Either[Throwable, String] = {
+    if (args.length < 1) {
+      Left(new IllegalArgumentException(
+        "Wrong arguments. Usage: <input file path>"))
+    } else {
+      Right(args(0))
+    }
   }
 
-  val ticketsFile = args(0)
-
   val program = for {
+    ticketsFile <- IO.fromEither(filePathString)
     inputs <- IO { Source.fromFile(ticketsFile, "ASCII").getLines() }
     _ <- IO { result(inputs.toSeq) foreach println }
   } yield ()
 
-  program.unsafeRunSync()
+  program.unsafeRunCancelable {
+    case Left(th) => System.err.println(th.getMessage)
+    case _ => ()
+  }
 }
