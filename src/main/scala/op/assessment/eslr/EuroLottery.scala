@@ -28,7 +28,7 @@ object EuroLottery {
     }
   }
 
-  private def combinations(set: Set[Int], m: Int): Set[Set[Int]] = {
+  private[eslr] def combinations(set: Set[Int], m: Int): Set[Set[Int]] = {
     if (m == 0) Set(Set.empty[Int]) else
     if (set.isEmpty) Set(Set.empty[Int]) else
     if (m >= set.size) Set(set) else {

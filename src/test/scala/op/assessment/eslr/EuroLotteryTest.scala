@@ -116,4 +116,23 @@ class EuroLotteryTest extends FunSuite {
 
     assert(same.flatMap(_.normalTickets).size == 6)
   }
+
+  test("combinations") {
+    assert(EuroLottery.combinations(Set(1, 2, 3 ,4, 5), 3) ===
+      Set(
+        Set(1, 2, 3), Set(1, 2, 4), Set(1, 2, 5),
+        Set(1, 3, 4), Set(1, 3, 5), Set(1, 4, 5),
+        Set(2, 3, 4), Set(2, 3, 5), Set(2, 4, 5),
+        Set(3, 4, 5)
+      )
+    )
+  }
+
+  test("system ticket: all combinations") {
+    val systemTicket = SystemTicket(
+      numbers = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+      stars = Set(1, 2, 3, 4, 5))
+
+    assert(systemTicket.normalTickets.size == 2520)
+  }
 }
