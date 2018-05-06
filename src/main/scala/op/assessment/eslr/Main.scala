@@ -13,43 +13,54 @@ import scala.io.Source
   * classes with 0 winners ignored.
   *
   * Usage (assume SBT installed): {{{
-  *    sbt "run <path to file with lottery tickets>"
+  *    sbt "run <path to tickets> <path to winning ticket file>"
   * }}}
   */
 object Main extends App {
 
-  type WinningClass = NormalTicket => Int
+  type WinningClassification = NormalTicket => Int
 
-  val solver = new Solver(
-    winNumbers = Set(1, 2, 3, 4, 5),
-    winStars = Set(1, 2)
-  )
+  def result(inputs: Seq[String])(w: WinningClassification): Array[String] = {
+    inputs
+      .flatMap(Ticket(_))
+      .flatMap(_.normalTickets)
+      .groupBy(w)
+      .toArray.sortBy(_._1)
+      .flatMap {
+        case (0, _) => None
+        case (k, v) => Some(s"Winning class $k - ${v.size}")
+      }
+  }
 
-  val winningClass: WinningClass = nt => solver(nt.numbers, nt.stars)
-
-  def result(inputs: Seq[String]): Array[String] = inputs
-    .flatMap(Ticket(_))
-    .flatMap(_.normalTickets)
-    .groupBy(winningClass)
-    .toArray.sortBy(_._1)
-    .flatMap {
-      case (0, _) => None
-      case (k, v) => Some(s"Winning class $k - ${v.size}")
-    }
-
-  def filePathString:  Either[Throwable, String] = {
-    if (args.length < 1) {
+  def filePathString:  Either[Throwable, (String, String)] = {
+    if (args.length < 2) {
       Left(new IllegalArgumentException(
-        "Wrong arguments. Usage: <input file path>"))
+        "Wrong arguments. Usage: <path to tickets> <path to winning ticket file>"))
     } else {
-      Right(args(0))
+      Right((args(0), args(1)))
+    }
+  }
+
+  def winningTicket(str: String): Either[Throwable, NormalTicket] = {
+    Ticket(str) match {
+      case Some(nt: NormalTicket) => Right(nt)
+      case _ => Left(new IllegalArgumentException("Winning ticket of wrong format"))
     }
   }
 
   val program = for {
-    ticketsFile <- IO.fromEither(filePathString)
-    inputs <- IO { Source.fromFile(ticketsFile, "ASCII").getLines() }
-    _ <- IO { result(inputs.toSeq) foreach println }
+    paths <- IO.fromEither(filePathString)
+    (ticketsPath, winingPath) = paths
+
+    inputs <- IO { Source.fromFile(ticketsPath, "ASCII").getLines() }
+    winning <- IO { Source.fromFile(winingPath, "ASCII").getLines().next() }
+    wt <- IO.fromEither(winningTicket(winning))
+
+    _ <- IO {
+        val solver = new Solver(wt.numbers, wt.stars)
+        val w: WinningClassification = nt => solver(nt.numbers, nt.stars)
+        result(inputs.toSeq)(w) foreach println
+      }
   } yield ()
 
   program.unsafeRunCancelable {
