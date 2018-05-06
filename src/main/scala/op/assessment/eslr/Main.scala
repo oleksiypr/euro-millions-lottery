@@ -1,17 +1,12 @@
 package op.assessment.eslr
 
+import cats.effect.IO
 import op.assessment.eslr.EuroLottery.{NormalTicket, Ticket}
+import scala.io.Source
 
 object Main extends App {
 
   type WinningClass = NormalTicket => Int
-
-  val inputs = List(
-    "1, 2, 3, 4, 5 : 1, 2",
-    "3, 4, 5, 6, 7 : 1, 2, 3",
-    "3, 4, 5, 6, 7 : 2, 3",
-    "6, 7, 8, 9, 10 : 3, 4"
-  )
 
   val solver = new Solver(
     winNumbers = Set(1, 2, 3, 4, 5),
@@ -20,7 +15,7 @@ object Main extends App {
 
   val winningClass: WinningClass = nt => solver(nt.numbers, nt.stars)
 
-  val result = inputs
+  def result(inputs: Seq[String]): Array[String] = inputs
     .flatMap(Ticket(_))
     .flatMap(_.normalTickets)
     .groupBy(winningClass)
@@ -30,6 +25,17 @@ object Main extends App {
       case (k, v) => Some(s"Winning class $k: ${v.size}")
     }
 
-  result foreach println
+  if (args.length < 1) {
+    System.err.println("Wrong arguments. Usage: <input file>")
+    System.exit(1)
+  }
 
+  val ticketsFile = args(0)
+
+  val program = for {
+    inputs <- IO { Source.fromFile(ticketsFile, "ASCII").getLines() }
+    _ <- IO { result(inputs.toSeq) foreach println }
+  } yield ()
+
+  program.unsafeRunSync()
 }
