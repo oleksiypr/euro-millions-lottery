@@ -48,6 +48,32 @@ object EuroLottery {
 
     type IntParse = String => Option[Int]
 
+    /**
+      * Create [[op.assessment.eslr.EuroLottery.Ticket]] instance based
+      * on ticket string iff input is correct.
+      * Input consists of list of distinct "numbers" and list of
+      * distinct "stars" separated with colon.
+      *
+      * Correct input format
+      * {{{
+      *   n1, n2, n3, n4, n5, [optional up to n10] : s1, s2 [optional up to s5]
+      * }}}
+      *
+      * Where {{{
+      *   ni - a "number": integer from 1 to 50
+      *   si - a "star": integer from 1 to 11
+      * }}}
+      *
+      * Example {{{
+      *   1, 2, 3, 4, 5 : 1, 2
+      *   3, 4, 5, 6, 7 : 1, 2, 3
+      *   1, 2, 3, 4, 5, 6 : 1, 2
+      * }}}
+      *
+      * @param input input string
+      * @return [[scala.Some]] of [[op.assessment.eslr.EuroLottery.Ticket]]
+      *        if input correct or [[scala.None]] otherwise
+      */
     def apply(input: String): Option[Ticket] = {
 
       def number(str: String): Option[Int] = {

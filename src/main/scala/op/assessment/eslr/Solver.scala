@@ -1,7 +1,7 @@
 package op.assessment.eslr
 
 /**
-  * Checks number and stars combination against winning combinations in order
+  * Check numbers and stars combination against winning combinations in order
   * to resolve winning class.
   *
   * @param winNumbers winning numbers as a set of 5 distinct integers
@@ -15,7 +15,7 @@ class Solver(winNumbers: Set[Int], winStars: Set[Int]) {
     * If a ticket does not correspond to any wining class result will be 0.
     *
     * @param numbers set of 5 distinct integers from 1 to 50 each
-    * @param stars set of 2 distinct integers 1 to 11 each
+    * @param stars set of 2 distinct integers from 1 to 11 each
     * @return winning class as integer number
     */
   def apply(numbers: Set[Int], stars: Set[Int]): Int = {
