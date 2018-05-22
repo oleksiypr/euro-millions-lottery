@@ -5,7 +5,7 @@ lazy val root = (project in file(".")).
       scalaVersion := "2.12.4",
       scalacOptions += "-Ypartial-unification"
     )),
-    name := "scalatest-example"
+    name := "euro-million-lottery"
   )
 
 libraryDependencies += "org.typelevel" %% "cats-core" % "1.1.0"
