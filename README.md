@@ -3,8 +3,7 @@
 
 *Euro Millions* system bets problem solution using `Scala` and `Cats`.
 
-
-1. ###Data structure
+1. ### Data structure
 
     Consider *Euro Millions lottery* rules, where in a `normal` *Euro Millions* ticket  
     field the customer can select 5 out of 50 `numbers` and 2 out of 11 `"star"-numbers`  
@@ -17,7 +16,7 @@
     Your first task is to design a data structure to model a ticket that can contain 
     *EuroMillions* `normal` fields as well as `system` ticket fields.
 
-2. ###Combinations
+2. ### Combinations
 
     Given a *Euro Millions* `system` ticket, implement the system expansion  
     that outputs all possible `normal` ticket field combinations:  
